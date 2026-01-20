@@ -2,7 +2,7 @@
 
 import os
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 from src.utils.config import Config
 
 

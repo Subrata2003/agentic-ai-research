@@ -1,4 +1,4 @@
-# Intelligent Research & Report Generator Agent
+# 🤖 Intelligent Research & Report Generator Agent
 
 An autonomous AI agent that conducts comprehensive research on any topic and generates detailed, well-structured reports.
 
@@ -12,11 +12,13 @@ Manual research is time-consuming, inconsistent, and often incomplete. This agen
 
 ## 🚀 Features
 
+- **🖥️ Interactive Web UI**: Beautiful, modern interface with real-time progress tracking
 - **Autonomous Research**: Automatically searches and gathers information from multiple sources
 - **Intelligent Synthesis**: Combines findings from different sources into coherent insights
 - **Smart Report Generation**: Creates well-formatted reports with citations and structure
 - **Multi-step Reasoning**: Plans research strategy and executes systematically
 - **Source Tracking**: Maintains references and citations for all information
+- **Multiple Interfaces**: Choose between Web UI or CLI based on your preference
 
 ## 📁 Project Structure
 
@@ -37,35 +39,81 @@ Manual research is time-consuming, inconsistent, and often incomplete. This agen
 ├── outputs/                        # Generated reports
 ├── .env.example                    # Environment variables template
 ├── requirements.txt                # Python dependencies
-└── main.py                         # CLI entry point
+├── app.py                          # Web UI (Streamlit)
+├── main.py                         # CLI entry point
+├── run_ui.bat                      # Windows launcher for UI
+└── run_ui.sh                       # Linux/Mac launcher for UI
 ```
 
 ## 🛠️ Setup
 
-1. Install dependencies:
+1. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set up environment variables:
+2. **Set up environment variables:**
 ```bash
 cp .env.example .env
-# Edit .env and add your API keys
+# Edit .env and add your API keys:
+# - GOOGLE_API_KEY (for Gemini)
+# - TAVILY_API_KEY (for web search)
 ```
 
-3. Run the agent:
+3. **Run the application:**
+
+### Option 1: Web UI (Recommended) 🌐
 ```bash
-python main.py
+# Windows
+run_ui.bat
+
+# Linux/Mac
+chmod +x run_ui.sh
+./run_ui.sh
+
+# Or directly:
+streamlit run app.py
 ```
 
-## 📝 Usage
+Then open your browser to `http://localhost:8501`
 
+### Option 2: Command Line Interface 💻
+```bash
+python main.py "Your research topic here"
+
+# With options:
+python main.py "Impact of AI on healthcare" --depth deep --format html
+```
+
+## 📝 Usage Examples
+
+### Web UI
+1. Open the application in your browser
+2. Enter your research topic
+3. Select research depth (Auto/Shallow/Medium/Deep)
+4. Click "Start Research"
+5. View results and download reports
+
+### CLI
+```bash
+# Basic research
+python main.py "Impact of AI on healthcare"
+
+# Deep research with HTML output
+python main.py "Climate change solutions" --depth deep --format html
+
+# Quick research without saving
+python main.py "Python best practices" --depth shallow --no-save
+```
+
+### Python API
 ```python
 from src.agent.research_agent import ResearchAgent
 
 agent = ResearchAgent()
-report = agent.research("Impact of AI on healthcare")
-print(report)
+result = agent.research("Impact of AI on healthcare", depth="medium")
+print(result['report'])
+print(f"Report saved to: {result['report_path']}")
 ```
 
 ## 🔧 Technologies
