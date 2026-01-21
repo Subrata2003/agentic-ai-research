@@ -30,19 +30,41 @@ class ReportGenerator:
         report.append("\n---\n\n")
         
         # Executive Summary
-        report.append("## Executive Summary\n")
+        report.append("## Executive Summary\n\n")
         synthesis = synthesis_data.get('synthesis', '')
 
-        if isinstance(synthesis, list):
-            synthesis = "\n\n".join(str(s) for s in synthesis)
+        # Handle different synthesis formats
+        if isinstance(synthesis, dict):
+            # Extract text from dictionary format
+            synthesis_text = synthesis.get('text', str(synthesis))
+        elif isinstance(synthesis, list):
+            # Handle list of synthesis items
+            synthesis_parts = []
+            for item in synthesis:
+                if isinstance(item, dict):
+                    synthesis_parts.append(item.get('text', str(item)))
+                else:
+                    synthesis_parts.append(str(item))
+            synthesis_text = "\n\n".join(synthesis_parts)
+        else:
+            synthesis_text = str(synthesis)
 
-        # Extract first paragraph as summary
-        summary = synthesis.split('\n\n')[0] if synthesis else "No summary available."
+        # Extract first paragraph as summary (skip if starts with formatting)
+        lines = synthesis_text.split('\n')
+        summary_lines = []
+        for line in lines:
+            line = line.strip()
+            if line and not line.startswith('#') and not line.startswith('---'):
+                summary_lines.append(line)
+                if len(summary_lines) >= 3:  # Get first 3 non-empty lines
+                    break
+        
+        summary = ' '.join(summary_lines) if summary_lines else "Comprehensive analysis provided below."
         report.append(f"{summary}\n\n")
         
         # Main Synthesis
-        report.append("## Detailed Analysis\n")
-        report.append(f"{synthesis}\n\n")
+        report.append("## Detailed Analysis\n\n")
+        report.append(f"{synthesis_text}\n\n")
         
         # Sources
         report.append("## Sources\n")

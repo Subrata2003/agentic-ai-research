@@ -24,7 +24,19 @@ st.set_page_config(
 st.markdown("""
     <style>
     .main {
-        background-color: #f8f9fa;
+        background-color: #000000;
+    }
+    .stApp {
+        background-color: #000000;
+    }
+    [data-testid="stAppViewContainer"] {
+        background-color: #000000;
+    }
+    [data-testid="stHeader"] {
+        background-color: #000000;
+    }
+    [data-testid="stSidebar"] {
+        background-color: #1a1a1a;
     }
     .stButton>button {
         width: 100%;
@@ -40,14 +52,15 @@ st.markdown("""
     .stButton>button:hover {
         background-color: #45a049;
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 8px rgba(76,175,80,0.4);
     }
     .report-container {
-        background-color: white;
+        background-color: #1a1a1a;
         padding: 2rem;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(255,255,255,0.1);
         margin-top: 1rem;
+        color: #e0e0e0;
     }
     .metric-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -57,19 +70,51 @@ st.markdown("""
         text-align: center;
         margin: 0.5rem 0;
     }
+    .metric-card h2, .metric-card p {
+        color: white;
+    }
     .info-box {
-        background-color: #e3f2fd;
+        background-color: #1a2332;
         border-left: 5px solid #2196F3;
-        padding: 1rem;
+        padding: 1.5rem;
         border-radius: 5px;
         margin: 1rem 0;
+        color: #e0e0e0;
+    }
+    .info-box h2 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: #64B5F6;
+    }
+    .info-box h3 {
+        margin-top: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #64B5F6;
+    }
+    .info-box p {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #e0e0e0;
+    }
+    .info-box ul {
+        margin-top: 0.3rem;
+        margin-bottom: 0.8rem;
+        padding-left: 1.5rem;
+    }
+    .info-box li {
+        margin-bottom: 0.4rem;
+        color: #e0e0e0;
     }
     .success-box {
-        background-color: #e8f5e9;
+        background-color: #1a2e1a;
         border-left: 5px solid #4CAF50;
         padding: 1rem;
         border-radius: 5px;
         margin: 1rem 0;
+        color: #e0e0e0;
+    }
+    .success-box h3 {
+        color: #81C784;
     }
     h1 {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -80,6 +125,21 @@ st.markdown("""
     }
     .stProgress > div > div > div > div {
         background-color: #667eea;
+    }
+    /* Make all text visible on black background */
+    p, span, div, label {
+        color: #e0e0e0;
+    }
+    h2, h3, h4, h5, h6 {
+        color: #ffffff;
+    }
+    /* Style markdown content */
+    .stMarkdown {
+        color: #e0e0e0;
+    }
+    /* Horizontal rules */
+    hr {
+        border-color: #333333;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -96,7 +156,7 @@ if 'research_history' not in st.session_state:
 col1, col2 = st.columns([3, 1])
 with col1:
     st.title("🤖 AI Research Assistant")
-    st.markdown("*Autonomous research powered by AI - Get comprehensive reports in seconds*")
+    st.markdown('<p style="color: #b0b0b0; font-style: italic;">Autonomous research powered by AI - Get comprehensive reports in seconds</p>', unsafe_allow_html=True)
 with col2:
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Reset"):
@@ -158,7 +218,7 @@ with st.sidebar:
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.subheader("🔍 Enter Your Research Topic")
+    st.markdown('<h3 style="color: #ffffff;">🔍 Enter Your Research Topic</h3>', unsafe_allow_html=True)
     topic = st.text_input(
         "",
         placeholder="e.g., 'Impact of AI on healthcare', 'Climate change solutions', 'Python best practices'",
@@ -171,7 +231,7 @@ with col2:
     research_button = st.button("🚀 Start Research", type="primary", use_container_width=True)
 
 # Examples
-st.markdown("**💡 Example Topics:**")
+st.markdown('<p style="color: #e0e0e0; font-weight: bold;">💡 Example Topics:</p>', unsafe_allow_html=True)
 example_col1, example_col2, example_col3 = st.columns(3)
 with example_col1:
     if st.button("🏥 AI in Healthcare", use_container_width=True):
@@ -201,7 +261,7 @@ if research_button and topic:
                 st.stop()
     
     # Progress tracking
-    st.markdown("### 🎯 Research Progress")
+    st.markdown('<h3 style="color: #ffffff;">🎯 Research Progress</h3>', unsafe_allow_html=True)
     progress_bar = st.progress(0)
     status_text = st.empty()
     
@@ -263,8 +323,8 @@ if research_button and topic:
         # Success message
         st.markdown("""
             <div class="success-box">
-                <h3>✅ Research Completed Successfully!</h3>
-                <p>Your comprehensive research report is ready below.</p>
+                <h3 style="color: #81C784;">✅ Research Completed Successfully!</h3>
+                <p style="color: #e0e0e0;">Your comprehensive research report is ready below.</p>
             </div>
         """, unsafe_allow_html=True)
         
@@ -280,7 +340,7 @@ if st.session_state.research_results:
     result = st.session_state.research_results
     
     # Metrics
-    st.markdown("### 📊 Research Metrics")
+    st.markdown('<h3 style="color: #ffffff;">📊 Research Metrics</h3>', unsafe_allow_html=True)
     metric_col1, metric_col2, metric_col3 = st.columns(3)
     
     with metric_col1:
@@ -312,7 +372,7 @@ if st.session_state.research_results:
     st.markdown("---")
     
     # Report display
-    st.markdown("### 📄 Research Report")
+    st.markdown('<h3 style="color: #ffffff;">📄 Research Report</h3>', unsafe_allow_html=True)
     
     # Download buttons
     col1, col2 = st.columns([1, 5])
@@ -348,7 +408,6 @@ elif not research_button:
         <div class="info-box">
             <h2>👋 Welcome to AI Research Assistant!</h2>
             <p>Get started by entering a research topic above and clicking "Start Research".</p>
-            <br>
             <h3>🎯 What This Tool Does:</h3>
             <ul>
                 <li><strong>Intelligent Planning:</strong> AI analyzes your topic and creates an optimal research strategy</li>
@@ -356,7 +415,6 @@ elif not research_button:
                 <li><strong>Smart Synthesis:</strong> Combines information from all sources into coherent insights</li>
                 <li><strong>Professional Reports:</strong> Generates well-structured, publication-ready reports</li>
             </ul>
-            <br>
             <h3>⚡ Features:</h3>
             <ul>
                 <li>Real-time progress tracking</li>
@@ -369,15 +427,15 @@ elif not research_button:
     """, unsafe_allow_html=True)
     
     # Feature showcase
-    st.markdown("### 🌟 Key Features")
+    st.markdown('<h3 style="color: #ffffff;">🌟 Key Features</h3>', unsafe_allow_html=True)
     feat_col1, feat_col2, feat_col3, feat_col4 = st.columns(4)
     
     with feat_col1:
         st.markdown("""
             <div style="text-align: center; padding: 1rem;">
                 <h1>🎯</h1>
-                <h4>Smart Planning</h4>
-                <p>AI-powered research strategy</p>
+                <h4 style="color: #ffffff;">Smart Planning</h4>
+                <p style="color: #b0b0b0;">AI-powered research strategy</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -385,8 +443,8 @@ elif not research_button:
         st.markdown("""
             <div style="text-align: center; padding: 1rem;">
                 <h1>⚡</h1>
-                <h4>Fast Results</h4>
-                <p>Get reports in seconds</p>
+                <h4 style="color: #ffffff;">Fast Results</h4>
+                <p style="color: #b0b0b0;">Get reports in seconds</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -394,8 +452,8 @@ elif not research_button:
         st.markdown("""
             <div style="text-align: center; padding: 1rem;">
                 <h1>📚</h1>
-                <h4>Multiple Sources</h4>
-                <p>Comprehensive data gathering</p>
+                <h4 style="color: #ffffff;">Multiple Sources</h4>
+                <p style="color: #b0b0b0;">Comprehensive data gathering</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -403,16 +461,16 @@ elif not research_button:
         st.markdown("""
             <div style="text-align: center; padding: 1rem;">
                 <h1>✨</h1>
-                <h4>Pro Reports</h4>
-                <p>Publication-ready output</p>
+                <h4 style="color: #ffffff;">Pro Reports</h4>
+                <p style="color: #b0b0b0;">Publication-ready output</p>
             </div>
         """, unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
 st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem;">
-        <p>🤖 Powered by Advanced AI | Built with ❤️ using Streamlit</p>
-        <p style="font-size: 0.8rem;">© 2026 AI Research Assistant - All rights reserved</p>
+    <div style="text-align: center; color: #888; padding: 1rem;">
+        <p style="color: #888;">🤖 Powered by Advanced AI | Built with ❤️ using Streamlit</p>
+        <p style="font-size: 0.8rem; color: #666;">© 2026 AI Research Assistant - All rights reserved</p>
     </div>
 """, unsafe_allow_html=True)
