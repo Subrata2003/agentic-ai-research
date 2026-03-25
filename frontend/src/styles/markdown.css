@@ -1,0 +1,85 @@
+/* =============================================================================
+   Prose / Markdown overrides for ReportViewer
+   Applied on top of @tailwindcss/typography prose-invert
+   ============================================================================= */
+
+.markdown-report {
+  /* Heading colors */
+  --tw-prose-headings: #e4e4e7;
+  --tw-prose-lead:     #a1a1aa;
+  --tw-prose-body:     #d4d4d8;
+  --tw-prose-bold:     #f4f4f5;
+  --tw-prose-code:     #a78bfa;
+  --tw-prose-links:    #818cf8;
+  --tw-prose-quotes:   #a1a1aa;
+  --tw-prose-hr:       #27272a;
+}
+
+/* Citation superscripts — the [n] markers */
+.markdown-report sup a.citation-ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1em;
+  height: 1.1em;
+  padding: 0 0.25em;
+  margin-left: 1px;
+  border-radius: 3px;
+  font-size: 0.65em;
+  font-weight: 600;
+  line-height: 1;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  vertical-align: super;
+}
+
+.markdown-report sup a.citation-ref:hover,
+.markdown-report sup a.citation-ref.active {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.6);
+  color: #a5b4fc;
+}
+
+/* Code blocks */
+.markdown-report pre {
+  background: #0d1117 !important;
+  border: 1px solid #27272a;
+  border-radius: 0.5rem;
+}
+
+.markdown-report code:not(pre code) {
+  background: rgba(167, 139, 250, 0.1);
+  color: #a78bfa;
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+/* Blockquotes */
+.markdown-report blockquote {
+  border-left: 3px solid #6366f1;
+  color: #a1a1aa;
+  font-style: italic;
+}
+
+/* Tables */
+.markdown-report table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.markdown-report th {
+  background: #18191f;
+  color: #e4e4e7;
+}
+.markdown-report th,
+.markdown-report td {
+  border: 1px solid #27272a;
+  padding: 0.5rem 0.75rem;
+}
+.markdown-report tr:nth-child(even) td {
+  background: rgba(255,255,255,0.02);
+}

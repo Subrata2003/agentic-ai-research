@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* =============================================================================
+   Design Tokens — CSS Custom Properties
+   ============================================================================= */
+:root {
+  /* Backgrounds */
+  --bg:            #080B11;
+  --surface-1:     #0F1117;
+  --surface-2:     #18191F;
+  --surface-3:     #1E2028;
+
+  /* Borders */
+  --border:        #27272A;
+  --border-muted:  #1C1C20;
+
+  /* Text */
+  --text-primary:   #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-muted:     #52525B;
+
+  /* Accent */
+  --accent:         #6366F1;
+  --accent-hover:   #818CF8;
+  --accent-glow:    rgba(99, 102, 241, 0.15);
+
+  /* Semantic */
+  --success:  #10B981;
+  --warning:  #F59E0B;
+  --error:    #EF4444;
+
+  /* Agent colours (used in terminal feed) */
+  --agent-plan:    #818CF8;
+  --agent-fetch:   #22D3EE;
+  --agent-synth:   #C084FC;
+  --agent-write:   #34D399;
+  --agent-system:  #52525B;
+
+  /* Typography */
+  --font-sans: "InterVariable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Fira Code", ui-monospace, monospace;
+}
+
+/* =============================================================================
+   Base reset
+   ============================================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background-color: var(--bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100dvh;
+}
+
+/* =============================================================================
+   Scrollbar styling (webkit)
+   ============================================================================= */
+::-webkit-scrollbar         { width: 6px; height: 6px; }
+::-webkit-scrollbar-track   { background: var(--surface-1); }
+::-webkit-scrollbar-thumb   { background: #3f3f46; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* =============================================================================
+   Utility animations
+   ============================================================================= */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes feed-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+  50%       { box-shadow: 0 0 30px rgba(99, 102, 241, 0.30); }
+}
+
+.animate-cursor-blink { animation: cursor-blink 1s step-end infinite; }
+.animate-feed-in      { animation: feed-in 0.15s ease-out; }
+.animate-glow-pulse   { animation: glow-pulse 3s ease-in-out infinite; }

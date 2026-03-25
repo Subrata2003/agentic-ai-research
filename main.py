@@ -9,7 +9,12 @@ from rich.markdown import Markdown
 from src.agent.research_agent import ResearchAgent
 from src.utils.config import Config
 
-console = Console()
+# Force UTF-8 output on Windows to avoid cp1252 emoji encoding errors
+import io
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+
+console = Console(force_terminal=True, highlight=False)
 
 
 def main():
@@ -56,22 +61,21 @@ Examples:
     args = parser.parse_args()
     
     # Display banner
-    banner = """
-    🤖 Intelligent Research & Report Generator Agent
-    
-    Conducting autonomous research and generating comprehensive reports...
-    """
+    banner = (
+        "Intelligent Research & Report Generator Agent v2\n\n"
+        "Conducting autonomous research and generating comprehensive reports..."
+    )
     console.print(Panel(banner, style="bold blue"))
     
     try:
         # Initialize agent
         agent = ResearchAgent()
         
-        # Conduct research
-        result = agent.research(
+        # Conduct research (sync wrapper over the async pipeline)
+        result = agent.research_sync(
             topic=args.topic,
             depth=args.depth,
-            save_report=not args.no_save
+            save_report=not args.no_save,
         )
         
         if "error" in result:
@@ -87,9 +91,27 @@ Examples:
         ))
         
         if result.get("report_path"):
-            console.print(f"\n[green]✓ Report saved to:[/green] {result['report_path']}")
-        
-        console.print(f"\n[cyan]Sources analyzed:[/cyan] {result['num_sources']}")
+            console.print(f"\n[green]Report saved to:[/green] {result['report_path']}")
+
+        synthesis   = result.get("synthesis")
+        critique    = result.get("critique")
+        fact_checks = result.get("fact_checks", [])
+
+        confidence  = f"{synthesis.overall_confidence:.0%}" if synthesis else "N/A"
+        quality     = f"{critique.overall_quality:.0%}"     if critique  else "N/A"
+
+        from src.agent.fact_checker_agent import FactCheckerAgent
+        fc_summary  = FactCheckerAgent.summary(fact_checks)
+
+        console.print(f"\n[cyan]Sources analysed:[/cyan]    {result['num_sources']}")
+        console.print(f"[cyan]Synthesis confidence:[/cyan] {confidence}")
+        console.print(f"[cyan]Critic quality score:[/cyan] {quality}")
+        console.print(
+            f"[cyan]Fact-check results:[/cyan]  "
+            f"[green]✓ {fc_summary.get('SUPPORTED', 0)} supported[/green]  "
+            f"[yellow]? {fc_summary.get('UNVERIFIABLE', 0)} unverifiable[/yellow]  "
+            f"[red]✗ {fc_summary.get('CONTRADICTED', 0)} contradicted[/red]"
+        )
         
     except KeyboardInterrupt:
         console.print("\n[yellow]Research interrupted by user[/yellow]")
