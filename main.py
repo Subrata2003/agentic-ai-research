@@ -95,12 +95,14 @@ Examples:
 
         synthesis   = result.get("synthesis")
         critique    = result.get("critique")
+        score       = result.get("score")
         fact_checks = result.get("fact_checks", [])
 
         confidence  = f"{synthesis.overall_confidence:.0%}" if synthesis else "N/A"
         quality     = f"{critique.overall_quality:.0%}"     if critique  else "N/A"
 
         from src.agent.fact_checker_agent import FactCheckerAgent
+        from src.evaluation.scorer import score_label, score_color
         fc_summary  = FactCheckerAgent.summary(fact_checks)
 
         console.print(f"\n[cyan]Sources analysed:[/cyan]    {result['num_sources']}")
@@ -112,6 +114,20 @@ Examples:
             f"[yellow]? {fc_summary.get('UNVERIFIABLE', 0)} unverifiable[/yellow]  "
             f"[red]✗ {fc_summary.get('CONTRADICTED', 0)} contradicted[/red]"
         )
+        if score:
+            label = score_label(score.overall)
+            color_map = {"emerald": "green", "amber": "yellow", "red": "red"}
+            clr = color_map.get(score_color(score.overall), "white")
+            console.print(
+                f"[cyan]Quality score:[/cyan]       "
+                f"[{clr}]{score.overall:.0%} — {label}[/{clr}]  "
+                f"(Coverage {score.source_coverage:.0%} · "
+                f"Citations {score.citation_accuracy:.0%} · "
+                f"Coherence {score.synthesis_coherence:.0%} · "
+                f"Density {score.factual_density:.0%})"
+            )
+        if result.get("report_id"):
+            console.print(f"[cyan]Report ID:[/cyan]           {result['report_id']}")
         
     except KeyboardInterrupt:
         console.print("\n[yellow]Research interrupted by user[/yellow]")
