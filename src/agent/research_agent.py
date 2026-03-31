@@ -24,6 +24,9 @@ from src.agent.critic_agent import CriticAgent
 from src.agent.fact_checker_agent import FactCheckerAgent
 from src.agent.parallel_researcher import ParallelResearcher
 from src.agent.planner import ResearchPlanner
+from src.evaluation.scorer import ResearchEvaluator, score_label, score_color
+from src.memory.db import save_report as db_save_report
+from src.memory.vector_store import VectorStore
 from src.models.outputs import (
     CriticOutput,
     EvaluationScore,
@@ -53,14 +56,16 @@ class ResearchAgent:
         Config.validate()
         setup_tracing()
 
-        self.planner     = ResearchPlanner()
-        self.researcher  = ParallelResearcher(max_concurrent=5)
-        self.synthesizer = Synthesizer()
+        self.planner      = ResearchPlanner()
+        self.researcher   = ParallelResearcher(max_concurrent=5)
+        self.synthesizer  = Synthesizer()
         self.fact_checker = FactCheckerAgent()
-        self.critic      = CriticAgent()
-        self.report_gen  = ReportGenerator()
+        self.critic       = CriticAgent()
+        self.report_gen   = ReportGenerator()
+        self.evaluator    = ResearchEvaluator()
+        self.vector_store = VectorStore()
 
-        print("✓ Research Agent initialized (multi-agent, async pipeline)")
+        print("✓ Research Agent initialized (multi-agent, async pipeline + memory)")
 
     # ------------------------------------------------------------------
     # Primary async pipeline
@@ -128,11 +133,19 @@ class ResearchAgent:
             }
 
         # ── 3. Synthesise ─────────────────────────────────────────── 55 %
-        print(f"\n🧠 [3/5] Synthesising {len(raw_sources)} sources...")
+        # Cap at 15 sources — beyond that the JSON response exceeds Gemini's
+        # output token budget and triggers the Stage-3 fallback (no citations).
+        # Sources are already ranked by relevance from ParallelResearcher.
+        MAX_SYNTH_SOURCES = 15
+        synth_sources = raw_sources[:MAX_SYNTH_SOURCES]
+        if len(raw_sources) > MAX_SYNTH_SOURCES:
+            print(f"\n🧠 [3/5] Synthesising top {MAX_SYNTH_SOURCES} of {len(raw_sources)} sources...")
+        else:
+            print(f"\n🧠 [3/5] Synthesising {len(synth_sources)} sources...")
         await _cb("synthesizing", 0.55)
 
         synthesis: SynthesizerOutput = self.synthesizer.synthesize(
-            raw_sources, topic
+            synth_sources, topic
         )
         print(f"   ✓ Confidence: {synthesis.overall_confidence:.0%}  |  "
               f"Citations: {len(synthesis.source_quotes)}  |  "
@@ -143,7 +156,7 @@ class ResearchAgent:
         await _cb("fact_checking", 0.70)
 
         fact_checks: List[FactCheckResult] = self.fact_checker.check(
-            synthesis, raw_sources
+            synthesis, synth_sources
         )
         fc_summary = FactCheckerAgent.summary(fact_checks)
         print(f"   ✓ Supported: {fc_summary.get('SUPPORTED', 0)}  |  "
@@ -161,12 +174,23 @@ class ResearchAgent:
         if critique.weaknesses:
             print(f"   ✓ Weaknesses: {critique.weaknesses[0][:80]}")
 
-        # ── TODO Phase 4: scorer.score() ──────────────────────────── 88 %
-        # score: EvaluationScore = scorer.score(synthesis, fact_checks, raw_sources)
-        # await _cb("scoring", 0.88)
-        score: Optional[EvaluationScore] = None
+        # ── 6. Score ──────────────────────────────────────────────── 88 %
+        print("\n📊 [6/7] Computing quality score...")
+        await _cb("scoring", 0.88)
 
-        # ── Generate report ───────────────────────────────────────── 92 %
+        score: EvaluationScore = self.evaluator.score(
+            synthesis, fact_checks, synth_sources
+        )
+        label = score_label(score.overall)
+        color = score_color(score.overall)
+        print(f"   ✓ Overall: {score.overall:.0%} [{label}]  |  "
+              f"Coverage: {score.source_coverage:.0%}  |  "
+              f"Citations: {score.citation_accuracy:.0%}  |  "
+              f"Coherence: {score.synthesis_coherence:.0%}  |  "
+              f"Density: {score.factual_density:.0%}")
+
+        # ── 7. Generate report ────────────────────────────────────── 92 %
+        print("\n📝 [7/7] Generating report...")
         await _cb("generating", 0.92)
         markdown_report = self.report_gen.generate_markdown_report(
             synthesis, score=score
@@ -177,8 +201,31 @@ class ResearchAgent:
             report_path = self.report_gen.save_report(markdown_report, topic)
             print(f"   ✓ Saved → {report_path}")
 
-        # ── TODO Phase 4: db.save_report() + vector_store.add_report() ─ 96 %
-        # await _cb("persisting", 0.96)
+        # ── 8. Persist to SQLite + ChromaDB ──────────────────────── 96 %
+        print("\n💾 [8/8] Persisting to memory...")
+        await _cb("persisting", 0.96)
+
+        report_id = db_save_report(
+            topic=topic,
+            depth=research_depth,
+            report_markdown=markdown_report,
+            report_path=report_path,
+            num_sources=len(raw_sources),
+            plan=plan,
+            synthesis=synthesis,
+            fact_checks=fact_checks,
+            critique=critique,
+            score=score,
+        )
+        self.vector_store.add_report(
+            report_id=report_id,
+            topic=topic,
+            executive_summary=synthesis.executive_summary,
+            depth=research_depth,
+            overall_score=score.overall,
+        )
+        print(f"   ✓ Persisted → DB id: {report_id[:8]}…  "
+              f"| Vector store count: {self.vector_store.count()}")
 
         await _cb("done", 1.0)
         print("\n" + "=" * 60)
@@ -186,6 +233,7 @@ class ResearchAgent:
         print("=" * 60)
 
         return {
+            "report_id":        report_id,
             "topic":            topic,
             "plan":             plan,
             "research_results": raw_sources,
