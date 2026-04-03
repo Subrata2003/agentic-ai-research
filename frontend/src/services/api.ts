@@ -6,7 +6,7 @@ import type {
   ReportDetail,
   PdfExportResponse,
   SimilarReport,
-  ApiStats,
+  AnalyticsStats,
 } from '@/types/api'
 
 // ---------------------------------------------------------------------------
@@ -38,9 +38,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(res.status, body)
   }
 
-  // 204 No Content
   if (res.status === 204) return undefined as T
-
   return res.json() as Promise<T>
 }
 
@@ -49,7 +47,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 // ---------------------------------------------------------------------------
 
 export const api = {
-  /** Start a new research job. Returns a job_id for WebSocket streaming. */
+  /** Start a new research job — returns job_id for WebSocket streaming. */
   startResearch(payload: StartResearchRequest): Promise<StartResearchResponse> {
     return request('/api/v1/research', {
       method: 'POST',
@@ -79,18 +77,18 @@ export const api = {
     return request(`/api/v1/reports/${id}`)
   },
 
-  /** Trigger PDF export for a report. Returns a status + eventual pdf_url. */
+  /** Trigger PDF generation — returns pdf_path when done. */
   exportPdf(id: string): Promise<PdfExportResponse> {
     return request(`/api/v1/reports/${id}/pdf`, { method: 'POST' })
   },
 
   /** Semantic similarity search over past reports. */
-  getSimilarReports(topic: string): Promise<SimilarReport[]> {
-    return request(`/api/v1/similar?topic=${encodeURIComponent(topic)}`)
+  getSimilarReports(topic: string, n = 5): Promise<SimilarReport[]> {
+    return request(`/api/v1/similar?topic=${encodeURIComponent(topic)}&n=${n}`)
   },
 
-  /** Aggregate analytics stats. */
-  getStats(): Promise<ApiStats> {
-    return request('/api/v1/stats')
+  /** Aggregate analytics stats for the dashboard. */
+  getAnalytics(): Promise<AnalyticsStats> {
+    return request('/api/v1/analytics')
   },
 }

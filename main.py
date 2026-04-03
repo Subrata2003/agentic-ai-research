@@ -33,7 +33,9 @@ Examples:
     parser.add_argument(
         "topic",
         type=str,
-        help="Research topic or query"
+        nargs="?",
+        default=None,
+        help="Research topic or query (omit when using --api)"
     )
     
     parser.add_argument(
@@ -57,9 +59,54 @@ Examples:
         default="markdown",
         help="Report format (default: markdown)"
     )
-    
+
+    parser.add_argument(
+        "--api",
+        action="store_true",
+        help="Start the FastAPI server instead of running a CLI research job"
+    )
+
+    parser.add_argument(
+        "--host",
+        type=str,
+        default=None,
+        help="API server host (default: from config / 0.0.0.0)"
+    )
+
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=None,
+        help="API server port (default: from config / 8000)"
+    )
+
     args = parser.parse_args()
     
+    # ── API server mode ──────────────────────────────────────────────────
+    if args.api:
+        import uvicorn
+        from src.utils.config import Config as _Cfg
+        host = args.host or _Cfg.API_HOST
+        port = args.port or _Cfg.API_PORT
+        console.print(Panel(
+            f"Starting API server on http://{host}:{port}\n"
+            f"Docs: http://{host}:{port}/docs",
+            style="bold green",
+        ))
+        uvicorn.run(
+            "src.api.main:app",
+            host=host,
+            port=port,
+            reload=True,
+            log_level="info",
+        )
+        return
+
+    # ── CLI research mode ─────────────────────────────────────────────────
+    if not args.topic:
+        console.print("[red]Error:[/red] topic is required unless --api is used")
+        sys.exit(1)
+
     # Display banner
     banner = (
         "Intelligent Research & Report Generator Agent v2\n\n"
