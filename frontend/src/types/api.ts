@@ -1,4 +1,4 @@
-/** Typed API request/response shapes that mirror the FastAPI schemas. */
+/** Typed API request/response shapes — mirrors FastAPI schemas exactly. */
 
 export type ResearchDepth = 'shallow' | 'medium' | 'deep'
 
@@ -13,86 +13,136 @@ export interface StartResearchRequest {
 }
 
 // ---------------------------------------------------------------------------
-// Responses
+// Research job
 // ---------------------------------------------------------------------------
 
 export interface StartResearchResponse {
   job_id: string
   status: 'queued' | 'running' | 'complete' | 'error'
+  topic: string
+  depth?: ResearchDepth | null
 }
+
+// ---------------------------------------------------------------------------
+// Report list (history page)
+// ---------------------------------------------------------------------------
 
 export interface ReportListItem {
   id: string
   topic: string
-  depth: ResearchDepth
-  created_at: string
+  depth: string
   num_sources: number
-  quality_score: number
+  overall_score: number | null       // 0–1 from EvaluationScore
+  overall_confidence: number | null  // from SynthesizerOutput
+  critic_quality: number | null
+  created_at: string                 // ISO-8601
   report_path: string | null
-  pdf_path: string | null
 }
 
 export interface PaginatedReports {
   items: ReportListItem[]
   total: number
   page: number
-  limit: number
-  has_next: boolean
+  pages: number                      // total page count
 }
 
+// ---------------------------------------------------------------------------
+// Quality score (EvaluationScore)
+// ---------------------------------------------------------------------------
+
 export interface QualityScore {
-  source_coverage:    number
-  citation_accuracy:  number
+  overall: number
+  source_coverage: number
+  citation_accuracy: number
   synthesis_coherence: number
-  factual_density:    number
-  overall:            number
+  factual_density: number
 }
+
+// ---------------------------------------------------------------------------
+// Fact-check summary
+// ---------------------------------------------------------------------------
+
+export interface FactCheckSummary {
+  supported: number
+  unverifiable: number
+  contradicted: number
+  total: number
+}
+
+// ---------------------------------------------------------------------------
+// Source quote
+// ---------------------------------------------------------------------------
 
 export interface SourceItem {
   source_index: number
-  url: string
   title: string
+  url: string
   exact_quote: string
   relevance_score: number
 }
 
-export interface FactCheck {
-  claim: string
-  verdict: 'SUPPORTED' | 'CONTRADICTED' | 'UNVERIFIABLE'
-  confidence: number
-  evidence: string | null
-}
+// ---------------------------------------------------------------------------
+// Full report detail (report viewer page)
+// ---------------------------------------------------------------------------
 
 export interface ReportDetail {
   id: string
   topic: string
-  depth: ResearchDepth
-  created_at: string
-  num_sources: number
+  depth: string
   report_markdown: string
+  num_sources: number
+  overall_score: number | null
+  overall_confidence: number | null
+  critic_quality: number | null
+  created_at: string
+  report_path: string | null
+  pdf_path: string | null
   quality_score: QualityScore | null
+  fact_check_summary: FactCheckSummary | null
   sources: SourceItem[]
-  fact_checks: FactCheck[]
+  plan_json: string | null
+  synthesis_json: string | null
 }
+
+// ---------------------------------------------------------------------------
+// PDF export
+// ---------------------------------------------------------------------------
 
 export interface PdfExportResponse {
-  job_id: string
-  pdf_url: string | null
-  status: 'processing' | 'ready' | 'error'
+  report_id: string
+  pdf_path: string
+  status: 'ok' | 'error'
 }
+
+// ---------------------------------------------------------------------------
+// Semantic similar reports
+// ---------------------------------------------------------------------------
 
 export interface SimilarReport {
-  id: string
+  report_id: string
   topic: string
-  created_at: string
-  quality_score: number
+  depth: string
+  score: string
   distance: number
+  summary: string
 }
 
-export interface ApiStats {
+// ---------------------------------------------------------------------------
+// Analytics dashboard
+// ---------------------------------------------------------------------------
+
+export interface AnalyticsStats {
   total_reports: number
-  avg_quality_score: number
-  avg_sources: number
-  fact_check_support_rate: number
-  reports_this_week: number
+  avg_quality: number | null
+  avg_sources: number | null
+  avg_confidence: number | null
+  total_sources_analysed: number | null
+  fact_check_distribution: Record<string, number>
+  depth_distribution: Record<string, number>
+  recent_reports: Array<{
+    id: string
+    topic: string
+    overall_score: number | null
+    created_at: string
+  }>
 }
