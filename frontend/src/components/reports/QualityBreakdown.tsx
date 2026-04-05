@@ -1,5 +1,6 @@
-import { pct, scoreColor } from '@/lib/utils'
+import { scoreColor } from '@/lib/utils'
 import type { QualityScore } from '@/types/api'
+import AnimatedScore from './AnimatedScore'
 
 interface DimensionRowProps {
   label: string
@@ -15,7 +16,7 @@ function DimensionRow({ label, value, weight }: DimensionRowProps) {
         <span className="text-zinc-400">{label}</span>
         <span className="flex items-center gap-2">
           <span className="text-zinc-600 text-[10px]">{weight}</span>
-          <span className={`font-semibold tabular-nums ${scoreColor(value)}`}>{pct(value)}</span>
+          <AnimatedScore value={value} className={`font-semibold ${scoreColor(value)}`} />
         </span>
       </div>
       <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
@@ -49,9 +50,7 @@ export default function QualityBreakdown({ score }: QualityBreakdownProps) {
 
       <div className="pt-2 border-t border-white/5 flex items-center justify-between">
         <span className="text-xs font-medium text-zinc-300">Overall</span>
-        <span className={`text-base font-bold tabular-nums ${scoreColor(score.overall)}`}>
-          {pct(score.overall)}
-        </span>
+        <AnimatedScore value={score.overall} className={`text-base font-bold ${scoreColor(score.overall)}`} />
       </div>
     </div>
   )

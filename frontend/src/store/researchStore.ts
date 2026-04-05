@@ -9,6 +9,7 @@ interface ResearchState {
   progress: number
   messages: AgentMessage[]
   completedReportId: string | null
+  hasAutoRedirected: boolean
 
   // Actions
   startJob: (jobId: string) => void
@@ -17,6 +18,7 @@ interface ResearchState {
   setProgress: (progress: number) => void
   appendMessage: (msg: AgentMessage) => void
   setCompleted: (reportId: string) => void
+  markRedirected: () => void
   reset: () => void
 }
 
@@ -27,6 +29,7 @@ const initialState = {
   progress: 0,
   messages: [],
   completedReportId: null,
+  hasAutoRedirected: false,
 }
 
 export const useResearchStore = create<ResearchState>()(
@@ -60,7 +63,11 @@ export const useResearchStore = create<ResearchState>()(
         s.completedReportId = reportId
         s.status = 'complete'
         s.progress = 1
+        s.hasAutoRedirected = false
       }),
+
+    markRedirected: () =>
+      set((s) => { s.hasAutoRedirected = true }),
 
     reset: () => set(() => ({ ...initialState })),
   })),

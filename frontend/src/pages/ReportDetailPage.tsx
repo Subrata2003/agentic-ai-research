@@ -57,7 +57,7 @@ export default function ReportDetailPage() {
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto">
         {/* Top bar */}
-        <div className="sticky top-0 z-10 flex items-center gap-3 px-6 py-3 border-b border-white/5 bg-[#080B11]/90 backdrop-blur-sm">
+        <div className="sticky top-0 z-10 flex items-center gap-3 px-6 py-3 border-b border-white/5 glass">
           <button
             onClick={() => navigate('/history')}
             className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
@@ -139,7 +139,7 @@ export default function ReportDetailPage() {
       </div>
 
       {/* ── Right sidebar ────────────────────────────────────────────────── */}
-      <div className="w-80 shrink-0 border-l border-white/5 overflow-y-auto flex flex-col gap-0">
+      <div className="w-80 shrink-0 border-l border-white/5 overflow-y-auto flex flex-col gap-0 glass">
 
         {/* Quality score */}
         {report.quality_score && (

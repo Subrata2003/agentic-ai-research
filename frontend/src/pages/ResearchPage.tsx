@@ -37,6 +37,8 @@ export default function ResearchPage() {
   const stage              = useResearchStore((s) => s.stage)
   const progress           = useResearchStore((s) => s.progress)
   const completedReportId  = useResearchStore((s) => s.completedReportId)
+  const hasAutoRedirected  = useResearchStore((s) => s.hasAutoRedirected)
+  const markRedirected     = useResearchStore((s) => s.markRedirected)
   const reset              = useResearchStore((s) => s.reset)
 
   // Connect WebSocket while a job is running
@@ -46,15 +48,16 @@ export default function ResearchPage() {
       : null,
   )
 
-  // Auto-navigate to report when done
+  // Auto-navigate to report when done — only fires once per job
   useEffect(() => {
-    if (status === 'complete' && completedReportId) {
+    if (status === 'complete' && completedReportId && !hasAutoRedirected) {
       const timer = setTimeout(() => {
+        markRedirected()
         navigate(`/reports/${completedReportId}`)
       }, 1800)
       return () => clearTimeout(timer)
     }
-  }, [status, completedReportId, navigate])
+  }, [status, completedReportId, hasAutoRedirected, markRedirected, navigate])
 
   const isActive = status !== 'idle'
 

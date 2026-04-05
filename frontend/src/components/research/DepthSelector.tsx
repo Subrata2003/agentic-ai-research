@@ -52,9 +52,9 @@ export default function DepthSelector({ value, onChange, disabled }: DepthSelect
             className={[
               'rounded-xl border px-3 py-3 text-left transition-all duration-150',
               'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500',
-              disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+              disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer card-hover',
               selected
-                ? 'border-indigo-500 bg-indigo-500/10 text-indigo-300'
+                ? 'border-indigo-500/70 bg-indigo-500/10 text-indigo-300 shadow-md shadow-indigo-500/15'
                 : 'border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:text-zinc-200',
             ].join(' ')}
           >

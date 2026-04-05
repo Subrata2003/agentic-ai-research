@@ -26,7 +26,7 @@ function ReportCard({ report }: { report: ReportListItem }) {
   return (
     <div
       onClick={() => navigate(`/reports/${report.id}`)}
-      className="group rounded-xl border border-white/5 bg-white/[0.03] p-5 cursor-pointer hover:border-indigo-500/30 hover:bg-white/[0.05] transition-all duration-150"
+      className="group card-hover rounded-xl border border-white/5 bg-white/[0.03] p-5 cursor-pointer hover:border-indigo-500/30 hover:bg-white/[0.05]"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

@@ -17,8 +17,8 @@ export default function TopBar() {
   const label = ROUTE_LABELS[pathname] ?? 'Report'
 
   return (
-    <header className="h-14 border-b border-zinc-800 bg-[#0F1117]/80 backdrop-blur-sm
-      flex items-center justify-between px-6 shrink-0">
+    <header className="h-14 border-b border-white/5 glass
+      flex items-center justify-between px-6 shrink-0 z-10">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <span className="text-zinc-500">ResearchAgent</span>
@@ -30,7 +30,9 @@ export default function TopBar() {
       <button
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
         className="w-8 h-8 rounded-lg flex items-center justify-center
-          text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition-colors"
+          text-zinc-400 hover:text-zinc-200 hover:bg-white/5
+          border border-transparent hover:border-white/10
+          transition-all duration-150"
         aria-label="Toggle theme"
       >
         {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}

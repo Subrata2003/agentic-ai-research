@@ -12,10 +12,10 @@ export default function SourceCard({ source, isActive }: SourceCardProps) {
     <div
       id={`source-${source.source_index}`}
       className={[
-        'rounded-xl border p-4 space-y-2 transition-all duration-300',
+        'card-hover rounded-xl border p-4 space-y-2',
         isActive
           ? 'border-indigo-500/60 bg-indigo-500/10 shadow-lg shadow-indigo-500/10'
-          : 'border-white/5 bg-white/[0.03] hover:border-white/10',
+          : 'border-white/5 bg-white/[0.03] hover:border-indigo-500/20',
       ].join(' ')}
     >
       {/* Header */}

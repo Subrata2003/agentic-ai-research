@@ -8,7 +8,7 @@ export default function AppShell() {
   const sidebarOpen = useUiStore((s) => s.sidebarOpen)
 
   return (
-    <div className="flex h-dvh overflow-hidden bg-[#080B11]">
+    <div className="flex h-dvh overflow-hidden bg-transparent">
       <Sidebar />
 
       {/* Main area — shrinks when sidebar collapses */}
@@ -17,7 +17,7 @@ export default function AppShell() {
         style={{ width: `calc(100% - ${sidebarOpen ? '14rem' : '3.5rem'})` }}
       >
         <TopBar />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-transparent">
           <PageTransition>
             <Outlet />
           </PageTransition>

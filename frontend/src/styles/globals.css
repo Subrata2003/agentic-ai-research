@@ -60,6 +60,9 @@ html {
 body {
   margin: 0;
   background-color: var(--bg);
+  background-image: radial-gradient(circle, rgba(99,102,241,0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100dvh;
 }
@@ -68,7 +71,7 @@ body {
    Scrollbar styling (webkit)
    ============================================================================= */
 ::-webkit-scrollbar         { width: 6px; height: 6px; }
-::-webkit-scrollbar-track   { background: var(--surface-1); }
+::-webkit-scrollbar-track   { background: transparent; }
 ::-webkit-scrollbar-thumb   { background: #3f3f46; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
@@ -90,9 +93,102 @@ body {
   50%       { box-shadow: 0 0 30px rgba(99, 102, 241, 0.30); }
 }
 
+@keyframes mesh-drift {
+  0%   { transform: translate(0%, 0%)   scale(1);    }
+  33%  { transform: translate(3%, -4%)  scale(1.05); }
+  66%  { transform: translate(-2%, 3%)  scale(0.97); }
+  100% { transform: translate(0%, 0%)   scale(1);    }
+}
+
+@keyframes mesh-drift-2 {
+  0%   { transform: translate(0%, 0%)   scale(1);    }
+  33%  { transform: translate(-4%, 3%)  scale(1.04); }
+  66%  { transform: translate(3%, -2%)  scale(0.98); }
+  100% { transform: translate(0%, 0%)   scale(1);    }
+}
+
+@keyframes counter-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
 .animate-cursor-blink { animation: cursor-blink 1s step-end infinite; }
 .animate-feed-in      { animation: feed-in 0.15s ease-out; }
 .animate-glow-pulse   { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-mesh-drift   { animation: mesh-drift   18s ease-in-out infinite; }
+.animate-mesh-drift-2 { animation: mesh-drift-2 22s ease-in-out infinite; }
+.animate-counter-in   { animation: counter-in 0.4s ease-out forwards; }
+
+/* =============================================================================
+   Glassmorphism helpers
+   ============================================================================= */
+.glass {
+  background: rgba(15, 17, 23, 0.75);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.glass-light {
+  background: rgba(20, 22, 30, 0.55);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* =============================================================================
+   Gradient border helper  (wrap element in .grad-border)
+   ============================================================================= */
+.grad-border {
+  position: relative;
+  border-radius: 0.75rem;
+}
+.grad-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.5), rgba(139,92,246,0.3), rgba(99,102,241,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   Card hover lift
+   ============================================================================= */
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.10), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* =============================================================================
+   Sidebar nav glow
+   ============================================================================= */
+.nav-glow {
+  position: relative;
+}
+.nav-glow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(to bottom, #818cf8, #6366f1);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.nav-glow.active::before {
+  opacity: 1;
+}
 
 /* =============================================================================
    Compare page — diff highlight marks
