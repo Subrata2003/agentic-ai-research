@@ -54,7 +54,12 @@ export default function ProgressRing({
 
       {/* Centre label */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-white tabular-nums">{pct}%</span>
+        <span
+          key={pct}
+          className="text-2xl font-bold text-white tabular-nums transition-all duration-300"
+        >
+          {pct}%
+        </span>
         {label && <span className="text-[10px] text-zinc-500 mt-0.5 text-center px-2">{label}</span>}
       </div>
     </div>

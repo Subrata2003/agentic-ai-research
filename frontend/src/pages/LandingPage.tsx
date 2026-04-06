@@ -74,8 +74,25 @@ export default function LandingPage() {
   const { data }   = useAnalytics()
 
   return (
-    <div className="overflow-y-auto h-full">
-      <div className="max-w-5xl mx-auto px-6 py-16 space-y-24">
+    <div className="overflow-y-auto h-full relative">
+
+      {/* Animated mesh gradient blobs */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0" aria-hidden>
+        <div
+          className="animate-mesh-drift absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)' }}
+        />
+        <div
+          className="animate-mesh-drift-2 absolute -bottom-60 -right-40 w-[700px] h-[700px] rounded-full opacity-15"
+          style={{ background: 'radial-gradient(circle, #7c3aed 0%, transparent 70%)' }}
+        />
+        <div
+          className="animate-mesh-drift absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-10"
+          style={{ background: 'radial-gradient(circle, #2563eb 0%, transparent 70%)' }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-16 space-y-24">
 
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <motion.section
@@ -189,7 +206,7 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: i * 0.06 }}
-                className="rounded-xl border border-white/5 bg-white/[0.03] p-5 hover:border-white/10 transition-colors"
+                className="card-hover rounded-xl border border-white/5 bg-white/[0.03] p-5 hover:border-indigo-500/20 glass-light"
               >
                 <div className={`inline-flex rounded-lg p-2 ${f.bg} mb-3`}>
                   <f.icon className={`h-4 w-4 ${f.color}`} />

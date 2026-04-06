@@ -36,7 +36,7 @@ function StatCard({
   valueClass?: string
 }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+    <div className="card-hover rounded-xl border border-white/5 bg-white/[0.04] p-5 glass-light">
       <div className="flex items-center gap-2 mb-3">
         <Icon className="h-4 w-4 text-zinc-500" />
         <span className="text-xs text-zinc-500 uppercase tracking-wide font-medium">{label}</span>
@@ -144,7 +144,7 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Depth distribution */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+          <div className="card-hover rounded-xl border border-white/5 bg-white/[0.04] p-5 glass-light">
             <h3 className="text-sm font-semibold text-zinc-300 mb-4">Reports by Depth</h3>
             {depthData.length === 0 ? (
               <p className="text-xs text-zinc-600 text-center py-8">No data yet.</p>
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Fact-check distribution */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+          <div className="card-hover rounded-xl border border-white/5 bg-white/[0.04] p-5 glass-light">
             <h3 className="text-sm font-semibold text-zinc-300 mb-4">Fact-Check Verdicts</h3>
             {factData.length === 0 ? (
               <p className="text-xs text-zinc-600 text-center py-8">No data yet.</p>
@@ -215,7 +215,7 @@ export default function AnalyticsPage() {
         {data.recent_reports.length > 0 && (
           <div>
             <h3 className="text-sm font-semibold text-zinc-300 mb-4">Recent Reports</h3>
-            <div className="rounded-xl border border-white/5 overflow-hidden">
+            <div className="rounded-xl border border-white/5 overflow-hidden glass-light">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/5 bg-white/[0.02]">
