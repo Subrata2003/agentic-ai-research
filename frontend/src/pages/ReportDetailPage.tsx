@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeSlug from 'rehype-slug'
-import { ArrowLeft, Download, Loader2, FileText, BookOpen, FlaskConical } from 'lucide-react'
+import { ArrowLeft, Download, Loader2, FileText, BookOpen, FlaskConical, Copy, Check, Clock } from 'lucide-react'
 import { useReport } from '@/hooks/useReports'
 import { usePdfExport } from '@/hooks/usePdfExport'
-import { formatDate, pct, scoreColor } from '@/lib/utils'
+import { formatDate, pct, scoreColor, readingTime } from '@/lib/utils'
 import ScoreBadge from '@/components/reports/ScoreBadge'
 import QualityBreakdown from '@/components/reports/QualityBreakdown'
 import SourceCard from '@/components/reports/SourceCard'
@@ -24,6 +24,14 @@ export default function ReportDetailPage() {
   const navigate   = useNavigate()
   const { data: report, isLoading, isError } = useReport(id)
   const { mutate: exportPdf, isPending: exporting } = usePdfExport()
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = useCallback(async () => {
+    if (!report) return
+    await navigator.clipboard.writeText(report.report_markdown)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [report])
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -73,6 +81,19 @@ export default function ReportDetailPage() {
           <div className="ml-auto flex items-center gap-2">
             <ScoreBadge score={report.overall_score} />
 
+            {/* Copy markdown */}
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-emerald-500/50 hover:text-emerald-300 transition-all"
+            >
+              {copied ? (
+                <><Check className="h-3.5 w-3.5 text-emerald-400" />Copied!</>
+              ) : (
+                <><Copy className="h-3.5 w-3.5" />Copy</>
+              )}
+            </button>
+
+            {/* PDF export */}
             <button
               onClick={() => exportPdf(report.id)}
               disabled={exporting}
@@ -83,11 +104,7 @@ export default function ReportDetailPage() {
                   : 'border-white/10 text-zinc-300 hover:border-indigo-500/50 hover:text-indigo-300',
               ].join(' ')}
             >
-              {exporting ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Download className="h-3.5 w-3.5" />
-              )}
+              {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
               Export PDF
             </button>
           </div>
@@ -95,10 +112,15 @@ export default function ReportDetailPage() {
 
         {/* Report header */}
         <div className="px-8 pt-8 pb-4">
-          <div className="flex items-center gap-2 mb-3 text-xs text-zinc-500">
+          <div className="flex items-center gap-2 mb-3 text-xs text-zinc-500 flex-wrap">
             <span>{DEPTH_LABEL[report.depth] ?? report.depth}</span>
             <span>·</span>
             <span>{report.num_sources} sources</span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {readingTime(report.report_markdown).label}
+            </span>
             <span>·</span>
             <span>{formatDate(report.created_at)}</span>
           </div>
