@@ -62,3 +62,18 @@ export function extractDomain(url: string): string {
 export function pct(value: number, decimals = 0): string {
   return `${(value * 100).toFixed(decimals)}%`
 }
+
+/** Estimate reading time from markdown text. Returns label + raw numbers. */
+export function readingTime(markdown: string): { label: string; words: number; minutes: number } {
+  const plain = markdown
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`[^`]+`/g, '')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[.*?\]\(.*?\)/g, '')
+    .replace(/#{1,6}\s/g, '')
+    .replace(/[*_~>`|]/g, '')
+  const words   = plain.trim().split(/\s+/).filter(Boolean).length
+  const minutes = Math.max(1, Math.round(words / 220))
+  const label   = `${minutes} min read · ${words.toLocaleString()} words`
+  return { label, words, minutes }
+}
