@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, SortAsc, FileText, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Search, SortAsc, FileText, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useReports } from '@/hooks/useReports'
 import { formatDate, timeAgo, scoreColor } from '@/lib/utils'
 import ScoreBadge from '@/components/reports/ScoreBadge'
+import { HistoryGridSkeleton } from '@/components/reports/HistoryCardSkeleton'
 import type { ReportListItem } from '@/types/api'
 
 type SortOption = 'newest' | 'oldest' | 'quality_desc' | 'quality_asc'
@@ -136,10 +137,7 @@ export default function HistoryPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-8 py-6">
         {isLoading ? (
-          <div className="flex h-40 items-center justify-center gap-3 text-zinc-400">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Loading…
-          </div>
+          <HistoryGridSkeleton />
         ) : !data || data.items.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center gap-3 text-zinc-500">
             <FileText className="h-10 w-10 text-zinc-700" />

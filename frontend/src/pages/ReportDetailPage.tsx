@@ -12,6 +12,8 @@ import ScoreBadge from '@/components/reports/ScoreBadge'
 import QualityBreakdown from '@/components/reports/QualityBreakdown'
 import SourceCard from '@/components/reports/SourceCard'
 import FactCheckSummaryCard from '@/components/reports/FactCheckSummaryCard'
+import TableOfContents from '@/components/reports/TableOfContents'
+import { ReportDetailSkeleton } from '@/components/reports/ReportDetailSkeleton'
 
 const DEPTH_LABEL: Record<string, string> = {
   shallow: 'Quick Scan',
@@ -34,14 +36,7 @@ export default function ReportDetailPage() {
   }, [report])
 
   // ── Loading ──────────────────────────────────────────────────────────────
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center gap-3 text-zinc-400">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        Loading report…
-      </div>
-    )
-  }
+  if (isLoading) return <ReportDetailSkeleton />
 
   // ── Error ────────────────────────────────────────────────────────────────
   if (isError || !report) {
@@ -162,6 +157,9 @@ export default function ReportDetailPage() {
 
       {/* ── Right sidebar ────────────────────────────────────────────────── */}
       <div className="w-80 shrink-0 border-l border-white/5 overflow-y-auto flex flex-col gap-0 glass">
+
+        {/* Table of contents */}
+        <TableOfContents markdown={report.report_markdown} />
 
         {/* Quality score */}
         {report.quality_score && (
